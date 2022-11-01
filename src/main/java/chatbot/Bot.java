@@ -3,17 +3,18 @@ package chatbot;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import helpers.Log;
 
 public class Bot {
- 
-	private boolean	online;
-	private boolean	muted;
 
-	private File	currentFile;
-	private int		currentFileLinesCount;
+	private boolean			online;
+	private boolean			muted;
+ 	
+	private List<String>	linesFromFile;
 
 	public Bot() {
 		setOnline();
@@ -23,69 +24,69 @@ public class Bot {
 		getFirstPhrase();
 	}
 
-	/** Извлечение приветственной фразы из первой строки текстового файла (набора фраз) */
+	/**
+	 * Извлечение приветственной фразы из первой строки текстового файла (набора
+	 * фраз)
+	 */
 	public void getFirstPhrase() {
-		try {
-			Log.info("Bot: " + Files.readAllLines(currentFile.toPath()).get(0));
-			System.out.print("$>");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Log.info("Bot: " + linesFromFile.get(0));
+		System.out.print("$>");
 	}
 
-	/** Извлечение случайной фразы из текстового файла  (набора фраз) */
+	/** Извлечение случайной фразы из текстового файла (набора фраз) */
 	public void getRandomPhrase() {
 		if (!isMuted()) {
-			try {
-				Log.info("Bot: " + Files.readAllLines(currentFile.toPath())
-						.get(ThreadLocalRandom.current().nextInt(1, currentFileLinesCount)));
-				System.out.print("$>");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			Log.info("Bot: " + linesFromFile
+					.get(ThreadLocalRandom.current().nextInt(1, linesFromFile.size())));
+			System.out.print("$>");
 		}
 	}
 
-	/** Извлечение прощальной фразы из последней строки текстового файла  (набора фраз) */
+	/**
+	 * Извлечение прощальной фразы из последней строки текстового файла (набора
+	 * фраз)
+	 */
 	public void getLastPhrase() {
-		if (!isMuted()) {
-			try {
-				Log.info("Bot: " + Files.readAllLines(currentFile.toPath()).get(currentFileLinesCount - 1));
-				System.out.print("$>");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		Log.info("Bot: " + linesFromFile.get(linesFromFile.size()-1));
+		System.out.print("$>");
 	}
 
-	/** Выбор текстового файла  с набором фраз
-	 *  Можно указать название файла, находящегося в той же дирректории, что и проект
-	 *  Или полный путь до файла в файловой системе 
-	*/
+	/**
+	 * Выбор текстового файла с набором фраз
+	 * Можно указать название файла, находящегося в той же дирректории, что и проект
+	 * Или полный путь до файла в файловой системе
+	 */
 	public void setFile(File file) {
-		this.currentFile = file;
 		initFileContent(file);
 	}
 
 	/**
-	 * Предварительный анализ подключенного файла на количество доступных в нём строк 
+	 * 
 	 */
 	private void initFileContent(File file) {
 		try {
-			currentFileLinesCount = Files.readAllLines(file.toPath()).size();
+			linesFromFile = Files.readAllLines(file.toPath());
 			Log.info("Файл " + file.getAbsolutePath() + " подключен успешно!");
 		} catch (IOException e) {
 			Log.error("Файла с таким именем " + file.toPath() + " не существует!");
 		}
+		clearEmptyStrings();
+	} 
+	
+	private void clearEmptyStrings() {
+		linesFromFile = linesFromFile.stream()
+		.filter(x -> !x.equals(""))
+		.collect(Collectors.toList());
 	}
- 
+
 	/**
 	 * Три метода по управлению Флаг активности бота (online)
 	 * setOnline()
 	 * setOffline()
 	 * isOnline()
 	 * 
-	 * Флаг используется в цикле для работы с ботом до тех пор, пока статус isOnline=true 
+	 * Флаг используется в цикле для работы с ботом до тех пор, пока статус
+	 * isOnline=true
 	 */
 	public void setOnline() {
 		this.online = true;
@@ -98,6 +99,7 @@ public class Bot {
 	public boolean isOnline() {
 		return online;
 	}
+
 	/**
 	 * Три метода по управлению "режимом молчания" бота
 	 * mute()
@@ -107,7 +109,7 @@ public class Bot {
 	public void mute() {
 		muted = true;
 	}
-	
+
 	public void unMute() {
 		muted = false;
 	}

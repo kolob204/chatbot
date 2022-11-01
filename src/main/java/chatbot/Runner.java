@@ -16,7 +16,7 @@ public class Runner {
 	private static void runBot() {
 		Scanner	commandScanner	= new Scanner(System.in);
 
-		Log.configureLogger();
+		//Log.configureLogger();
 		Bot		bot				= new Bot();
 
 		while (bot.isOnline()) {

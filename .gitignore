@@ -1,2 +1,7 @@
+/.git/
 /logs/
 /.settings/
+/target/
+*.txt
+*.jar
+*.bat
