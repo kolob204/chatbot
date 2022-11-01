@@ -37,7 +37,7 @@ public class Bot {
 	public void getRandomPhrase() {
 		if (!isMuted()) {
 			Log.info("Bot: " + linesFromFile
-					.get(ThreadLocalRandom.current().nextInt(1, linesFromFile.size())));
+					.get(ThreadLocalRandom.current().nextInt(1, linesFromFile.size()-1)));
 			System.out.print("$>");
 		}
 	}
@@ -61,7 +61,7 @@ public class Bot {
 	}
 
 	/**
-	 * 
+	 * Чтение строк из файла (с исключением пустых)
 	 */
 	private void initFileContent(File file) {
 		try {

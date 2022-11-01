@@ -1,5 +1,5 @@
 /.git/
-/logs/
+/logs/ 
 /.settings/
 /target/
 *.txt
